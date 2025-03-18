@@ -1,0 +1,87 @@
+<!-- File: src/app/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>SmartBin Connect Dashboard</h1>
+      <div class="filter-controls">
+        <select class="form-select" (change)="filterBinsByStatus($any($event.target).value)">
+          <option value="ALL">All Bins</option>
+          <option value="NORMAL">Normal</option>
+          <option value="WARNING">Warning</option>
+          <option value="FULL">Full</option>
+        </select>
+        <button (click)="refreshData()" class="refresh-btn">
+          <i class="fa fa-refresh"></i> Refresh
+        </button>
+      </div>
+    </div>
+  
+    <div class="dashboard-content">
+      <div class="bins-list">
+        <h2>Smart Bins</h2>
+        <div class="bins-grid">
+          <div *ngFor="let bin of bins" 
+               class="bin-card" 
+               [ngClass]="getStatusClass(bin.status)"
+               (click)="selectBin(bin)">
+            <div class="bin-header">
+              <span class="bin-id">ID: {{bin.id.substr(0, 8)}}</span>
+              <span class="bin-type">{{bin.binType}}</span>
+            </div>
+            <div class="bin-fill-indicator">
+              <div class="fill-bar">
+                <div class="fill-level" [style.height.%]="bin.fillLevel"></div>
+              </div>
+              <span class="fill-percentage">{{bin.fillLevel}}%</span>
+            </div>
+            <div class="bin-footer">
+              <span class="bin-location">{{bin.location.address}}</span>
+              <span class="bin-updated">{{bin.lastUpdated | date:'short'}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="bin-details" *ngIf="selectedBin">
+        <h2>Bin Details</h2>
+        <div class="details-card">
+          <div class="detail-row">
+            <span class="detail-label">ID:</span>
+            <span class="detail-value">{{selectedBin.id}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value">{{selectedBin.binType}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value" [ngClass]="getStatusClass(selectedBin.status)">
+              {{selectedBin.status}}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fill Level:</span>
+            <span class="detail-value">{{selectedBin.fillLevel}}%</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">{{selectedBin.location.address}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Coordinates:</span>
+            <span class="detail-value">
+              {{selectedBin.location.latitude}}, {{selectedBin.location.longitude}}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Last Updated:</span>
+            <span class="detail-value">{{selectedBin.lastUpdated | date:'medium'}}</span>
+          </div>
+          <div class="detail-actions">
+            <button class="btn-primary">Schedule Collection</button>
+            <button class="btn-secondary" (click)="selectedBin = null">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

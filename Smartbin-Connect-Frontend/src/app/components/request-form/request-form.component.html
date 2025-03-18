@@ -1,0 +1,55 @@
+
+<div class="request-form-container">
+    <h2>Request Trash Collection</h2>
+    
+    <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="address">Collection Address</label>
+        <input 
+          type="text" 
+          id="address" 
+          formControlName="address" 
+          placeholder="Enter your address"
+          class="form-control"
+        >
+        <div class="validation-error" *ngIf="requestForm.get('address')?.invalid && requestForm.get('address')?.touched">
+          Address is required
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Additional Notes</label>
+        <textarea 
+          id="notes" 
+          formControlName="notes" 
+          placeholder="Provide any additional details about your collection request"
+          class="form-control"
+          rows="4"
+        ></textarea>
+      </div>
+      
+      <!-- In a real app, you would add a map component here to select location -->
+      <div class="form-group map-placeholder">
+        <p>Map will be displayed here to select your location</p>
+        <!-- Hidden form fields that would be populated by map selection -->
+        <input type="hidden" formControlName="latitude">
+        <input type="hidden" formControlName="longitude">
+      </div>
+      
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          [disabled]="requestForm.invalid || isSubmitting"
+        >
+          <span *ngIf="isSubmitting">Submitting...</span>
+          <span *ngIf="!isSubmitting">Submit Request</span>
+        </button>
+        <button type="button" class="btn-secondary" routerLink="/dashboard">Cancel</button>
+      </div>
+      
+      <div class="error-message" *ngIf="submitError">
+        {{ submitError }}
+      </div>
+    </form>
+  </div>
