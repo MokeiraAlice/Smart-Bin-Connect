@@ -3,11 +3,10 @@ package com.example.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.Entity.CollectionRequest;
+import com.example.Repository.CollectionRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.smartbin.model.CollectionRequest;
-import com.smartbin.repository.CollectionRequestRepository;
 
 @Service
 public class CollectionRequestService {

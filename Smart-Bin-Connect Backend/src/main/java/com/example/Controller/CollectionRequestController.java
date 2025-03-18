@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import com.example.Entity.CollectionRequest;
+import com.example.Service.CollectionRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.smartbin.model.CollectionRequest;
-import com.smartbin.service.CollectionRequestService;
 
 @RestController
 @RequestMapping("/api/collection-requests")

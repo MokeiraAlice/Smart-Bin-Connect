@@ -4,11 +4,10 @@ package com.example.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.Entity.SmartBin;
+import com.example.Repository.SmartBinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.smartbin.model.SmartBin;
-import com.smartbin.repository.SmartBinRepository;
 
 @Service
 public class SmartBinService {
@@ -20,7 +19,7 @@ public class SmartBinService {
         return binRepository.findAll();
     }
 
-    public SmartBin getBinById(String id) {
+    public SmartBin getBinById(Long id) {
         return binRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Bin not found with id: " + id));
     }
@@ -33,7 +32,7 @@ public class SmartBinService {
         return binRepository.findByStatus(status);
     }
 
-    public SmartBin updateBinFillLevel(String id, double fillLevel) {
+    public SmartBin updateBinFillLevel( Long id, double fillLevel) {
         SmartBin bin = getBinById(id);
         bin.setFillLevel(fillLevel);
         bin.setLastUpdated(LocalDateTime.now());
@@ -50,7 +49,7 @@ public class SmartBinService {
         return binRepository.save(bin);
     }
 
-    public SmartBin updateBinStatus(String id, SmartBin.BinStatus status) {
+    public SmartBin updateBinStatus(Long id, SmartBin.BinStatus status) {
         SmartBin bin = getBinById(id);
         bin.setStatus(status);
         bin.setLastUpdated(LocalDateTime.now());
@@ -72,7 +71,7 @@ public class SmartBinService {
         return binRepository.save(bin);
     }
 
-    public void deleteBin(String id) {
+    public void deleteBin(Long id) {
         binRepository.deleteById(id);
     }
 }

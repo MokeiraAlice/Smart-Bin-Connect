@@ -2,21 +2,36 @@ package com.example.Entity;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import lombok.Data;
 
 @Data
-@Document(collection = "smart_bins")
+@Entity
+@Table(name = "smart_bins")
 public class SmartBin {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Embedded
     private Location location;
+
     private double fillLevel;
     private LocalDateTime lastUpdated;
+
+    @Enumerated(EnumType.STRING)
     private BinStatus status;
+
+    @Enumerated(EnumType.STRING)
     private BinType binType;
 
     public enum BinStatus {
@@ -28,6 +43,7 @@ public class SmartBin {
     }
 
     @Data
+    @Embeddable
     public static class Location {
         private double latitude;
         private double longitude;

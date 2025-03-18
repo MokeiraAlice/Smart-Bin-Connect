@@ -1,16 +1,15 @@
 package com.example.Controller;
 
-
-
 import java.util.List;
 
+import com.example.Entity.SmartBin;
+import com.example.Service.SmartBinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.smartbin.model.SmartBin;
-import com.smartbin.service.SmartBinService;
+
 
 @RestController
 @RequestMapping("/api/bins")
@@ -26,7 +25,7 @@ public class SmartBinController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SmartBin> getBinById(@PathVariable String id) {
+    public ResponseEntity<SmartBin> getBinById(@PathVariable Long id) {
         return ResponseEntity.ok(binService.getBinById(id));
     }
 
@@ -47,20 +46,20 @@ public class SmartBinController {
 
     @PatchMapping("/{id}/fill-level")
     public ResponseEntity<SmartBin> updateBinFillLevel(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestBody double fillLevel) {
         return ResponseEntity.ok(binService.updateBinFillLevel(id, fillLevel));
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<SmartBin> updateBinStatus(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestBody SmartBin.BinStatus status) {
         return ResponseEntity.ok(binService.updateBinStatus(id, status));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBin(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBin(@PathVariable Long id) {
         binService.deleteBin(id);
         return ResponseEntity.noContent().build();
     }
