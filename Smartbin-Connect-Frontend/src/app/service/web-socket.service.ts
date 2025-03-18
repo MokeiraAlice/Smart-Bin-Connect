@@ -1,94 +1,52 @@
 import { Injectable } from '@angular/core';
+import SockJS from 'sockjs-client';
+import { Client, IMessage } from '@stomp/stompjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../environments/environment';
-import * as SockJS from 'sockjs-client';
-import { Client, Message, over } from '@stomp/stompjs';
-import { Observable, Subject, from } from 'rxjs';
-import { SmartBin } from '../models/SmartBin';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
-  private stompClient!: Client;
-  private connectionStatus = new Subject<boolean>();
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
+  private client: Client;
+  private binUpdatesSubject = new Subject<any>();
 
   constructor() {
-    this.initializeConnection();
-  }
-
-  private initializeConnection() {
-    this.stompClient = new Client({
+    this.client = new Client({
       webSocketFactory: () => new SockJS(`${environment.apiBaseUrl}/ws`),
+      debug: function(str) {
+        console.log(str);
+      },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      onConnect: () => {
-        this.reconnectAttempts = 0;
-        this.connectionStatus.next(true);
-        console.log('WebSocket connected');
-      },
-      onStompError: (error) => {
-        this.connectionStatus.next(false);
-        console.error('WebSocket error:', error);
-        this.handleReconnection();
-      }
+      heartbeatOutgoing: 4000
     });
 
-    this.stompClient.activate();
-  }
-
-  private handleReconnection() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      setTimeout(() => {
-        console.log(`Reconnection attempt ${this.reconnectAttempts}`);
-        this.stompClient.deactivate().then(() => this.stompClient.activate());
-      }, 5000);
-    }
-  }
-
-  public subscribeToBinUpdates(): Observable<SmartBin> {
-    return new Observable<SmartBin>(observer => {
-      if (this.stompClient.connected) {
-        const subscription = this.stompClient.subscribe(
-          '/topic/bins',
-          (message: Message) => {
-            const bin: SmartBin = JSON.parse(message.body);
-            observer.next(bin);
-          }
-        );
-        return () => subscription.unsubscribe();
-      }
-      
-      const statusSub = this.connectionStatus.subscribe(connected => {
-        if (connected) {
-          const subscription = this.stompClient.subscribe(
-            '/topic/bins',
-            (message: Message) => {
-              const bin: SmartBin = JSON.parse(message.body);
-              observer.next(bin);
-            }
-          );
-          statusSub.unsubscribe();
-          return () => subscription.unsubscribe();
+    this.client.onConnect = (frame) => {
+      console.log('Connected: ' + frame);
+      this.client.subscribe('/topic/bin-updates', (message) => {
+        if (message.body) {
+          const update = JSON.parse(message.body);
+          this.binUpdatesSubject.next(update);
         }
-        return undefined;
       });
-      
-      return () => statusSub.unsubscribe();
-    });
+    };
+
+    this.client.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message']);
+      console.error('Additional details: ' + frame.body);
+    };
+
+    this.client.activate();
   }
 
-  public getConnectionStatus(): Observable<boolean> {
-    return this.connectionStatus.asObservable();
+  getBinUpdates(): Observable<any> {
+    return this.binUpdatesSubject.asObservable();
   }
 
-  public closeConnection() {
-    if (this.stompClient.connected) {
-      this.stompClient.deactivate();
-      this.connectionStatus.next(false);
+  close() {
+    if (this.client) {
+      this.client.deactivate();
     }
   }
 }

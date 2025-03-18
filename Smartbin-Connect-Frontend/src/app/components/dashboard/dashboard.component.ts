@@ -61,6 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (index !== -1) {
           this.bins[index] = { ...this.bins[index], ...update };
         }
+      
       },
       error: (error) => {
         console.error('WebSocket error', error);
